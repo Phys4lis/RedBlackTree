@@ -127,16 +127,20 @@ void add(Node* &treeRoot, Node* current, Node* newNode) {
     }
   }  // Fix the tree
   if (newNode->getParent() != NULL) {
+    cout << "fixing tree now" << endl;
     // Case 1: Insert at root
     if (treeRoot == newNode) {
       treeRoot->setColor('B');
     }
     // Case 3: Parent and uncle are red
-    else if (newNode->getParent()->getColor() == 'R' && newNode->getUncle()->getColor() == 'R') {
-      newNode->getParent()->setColor('B');
-      newNode->getUncle()->setColor('B');
-      newNode->getParent()->getParent()->setColor('R');
-      add(treeRoot, current, newNode->getParent()->getParent());
+    else if (newNode->getUncle() != NULL) {
+      if (newNode->getParent()->getColor() == 'R' && newNode->getUncle()->getColor() == 'R') {
+	cout << "what" << endl;
+	newNode->getParent()->setColor('B');
+	newNode->getUncle()->setColor('B');
+	newNode->getParent()->getParent()->setColor('R');
+	add(treeRoot, current, newNode->getParent()->getParent());
+      }
     }
     // Case 4 & 5: Uncle is black, triangle case and line case
     // Triangle case
@@ -170,11 +174,66 @@ void add(Node* &treeRoot, Node* current, Node* newNode) {
       // Line case
       // Parent is left and node is left
       else if (newNode->getParent()->getParent()->getLeft() == newNode->getParent() && newNode->getParent()->getLeft() == newNode) {
-
+	// Tree rotation
+	Node* tempParent = newNode->getParent();
+	Node* tempGrandParent = newNode->getParent()->getParent();
+	// Change parents
+	if (tempGrandParent->getParent() != NULL) {
+	  newNode->getParent()->setParent(tempGrandParent->getParent());
+	}
+	else if (tempGrandParent->getParent() == NULL) {
+	  cout << "root" << endl;
+	  newNode->getParent()->setParent(NULL);
+	  // treeRoot = newNode->getParent();
+	}
+	newNode->getParent()->setRight(tempParent->getParent()->getParent());
+	// Change children
+	if (tempParent->getRight() != NULL) {
+	  newNode->getParent()->getRight()->setLeft(tempParent->getRight());
+	}
+	else {
+	  newNode->getParent()->getRight()->setLeft(NULL);
+	}
+	// Swap colors
+	if (newNode->getParent()->getColor() == 'R') {
+	  newNode->getParent()->setColor('B');
+	  newNode->getParent()->getRight()->setColor('R');
+	}
+	else if (newNode->getParent()->getColor() == 'B') {
+	  if (newNode->getParent()->getRight()->getColor() == 'R') {
+	    newNode->getParent()->setColor('R');
+	    newNode->getParent()->getRight()->setColor('B');
+	  }
+	}
       }
       // Parent is right and node is right
       else if (newNode->getParent()->getParent()->getRight() == newNode->getParent() && newNode->getParent()->getRight() == newNode) {
-
+	Node* tempParent = newNode->getParent();
+	newNode->getParent()->setLeft(newNode->getParent()->getParent());
+        if (newNode->getParent()->getLeft()->getParent() != NULL) {
+	  newNode->getParent()->setParent(newNode->getParent()->getLeft()->getParent());
+	}
+	else {
+	  newNode->getParent()->setParent(NULL);
+	  treeRoot = newNode->getParent();
+	}
+	if (tempParent->getLeft() != NULL) {
+	  newNode->getParent()->getLeft()->setRight(tempParent->getLeft());
+	}
+	else {
+	  newNode->getParent()->getLeft()->setRight(NULL);
+	}
+	// Swap colors
+	if (newNode->getParent()->getColor() == 'R') {
+	  newNode->getParent()->setColor('B');
+	  newNode->getParent()->getLeft()->setColor('R');
+	}
+	else if (newNode->getParent()->getColor() == 'B') {
+	  if (newNode->getParent()->getLeft()->getColor() == 'R') {
+	    newNode->getParent()->setColor('R');
+	    newNode->getParent()->getLeft()->setColor('B');
+	  }
+	}
       }
     }
   }
