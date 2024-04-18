@@ -31,7 +31,8 @@ int main() {
 	if (strcmp(input, "FILE") == 0) {
 	  /*int input[100];
 	  int totalNums;
-	  cout << "How many numbers are you adding?" << endl;
+	  cout << "How m
+any numbers are you adding?" << endl;
 	  cin >> totalNums;
 	  cin.get();
 	  // File input
@@ -133,48 +134,55 @@ void add(Node* &treeRoot, Node* current, Node* newNode) {
       treeRoot->setColor('B');
     }
     // Case 3: Parent and uncle are red
-    else if (newNode->getUncle() != NULL) {
-      if (newNode->getParent()->getColor() == 'R' && newNode->getUncle()->getColor() == 'R') {
-	cout << "what" << endl;
-	newNode->getParent()->setColor('B');
-	newNode->getUncle()->setColor('B');
-	newNode->getParent()->getParent()->setColor('R');
-	add(treeRoot, current, newNode->getParent()->getParent());
-      }
+    else if (newNode->getUncle() != NULL && (newNode->getParent()->getColor() == 'R' && newNode->getUncle()->getColor() == 'R')) {
+      cout << "what" << endl;
+      newNode->getParent()->setColor('B');
+      newNode->getUncle()->setColor('B');
+      newNode->getParent()->getParent()->setColor('R');
+      add(treeRoot, current, newNode->getParent()->getParent());
     }
     // Case 4 & 5: Uncle is black, triangle case and line case
     // Triangle case
     else if (newNode->getUncle() == NULL || newNode->getUncle()->getColor() == 'B') {
       // Parent is left and node is right
       if (newNode->getParent()->getParent()->getLeft() == newNode->getParent() && newNode->getParent()->getRight() == newNode) {
+	// Change parents and children
 	Node* tempParent = newNode->getParent();
-	newNode->setParent(newNode->getParent()->getParent());
-	newNode->getParent()->setLeft(newNode);
 	Node* tempLeft = newNode->getLeft();
+	newNode->getParent()->getParent()->setLeft(newNode);
+   	newNode->setParent(newNode->getParent()->getParent());
 	newNode->setLeft(tempParent);
-	tempParent->setParent(newNode);
+	newNode->getLeft()->setParent(newNode);
 	if (tempLeft != NULL) {
 	  tempParent->setRight(tempLeft);
-	  tempLeft->setParent(tempParent);
+	  tempParent->getRight()->setParent(newNode->getLeft());
+	}
+	else {
+	  tempParent->setRight(NULL);
 	}
       }
-      // Parent is right and node is left
+      //Parent is right and node is left
       else if (newNode->getParent()->getParent()->getRight() == newNode->getParent() && newNode->getParent()->getLeft() == newNode) {
+	// Change parents and children
 	Node* tempParent = newNode->getParent();
-	newNode->setParent(newNode->getParent()->getParent());
-	newNode->getParent()->setRight(newNode);
 	Node* tempRight = newNode->getRight();
+	newNode->getParent()->getParent()->setRight(newNode);
+   	newNode->setParent(newNode->getParent()->getParent());
 	newNode->setRight(tempParent);
-	tempParent->setParent(newNode);
+	newNode->getRight()->setParent(newNode);
 	if (tempRight != NULL) {
-	  tempParent->setRight(tempRight);
-	  tempRight->setParent(tempParent);
+	  tempParent->setLeft(tempRight);
+	  tempParent->getLeft()->setParent(newNode->getRight());
+	}
+	else {
+	  tempParent->setLeft(NULL);
 	}
       }
       // Line case
       // Parent is left and node is left
       else if (newNode->getParent()->getParent()->getLeft() == newNode->getParent() && newNode->getParent()->getLeft() == newNode) {
 	// Tree rotation
+	cout << "left left" << endl;
 	Node* tempParent = newNode->getParent();
 	Node* tempGrandParent = newNode->getParent()->getParent();
 	// Change parents
@@ -204,7 +212,7 @@ void add(Node* &treeRoot, Node* current, Node* newNode) {
 	    newNode->getParent()->setColor('R');
 	    newNode->getParent()->getRight()->setColor('B');
 	  }
-	}
+	  }
       }
       // Parent is right and node is right
       else if (newNode->getParent()->getParent()->getRight() == newNode->getParent() && newNode->getParent()->getRight() == newNode) {
